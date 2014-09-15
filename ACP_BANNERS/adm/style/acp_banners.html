@@ -1,0 +1,236 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF B_MESSAGE -->
+<div class="{B_ALERTBOX}">
+	<p>{B_MESSAGE}</p>
+</div>
+<!-- ENDIF -->
+
+<!-- IF ADD_BANNERS -->
+
+	<form id="acp_banners" method="post" enctype="multipart/form-data" action="{U_ACTION}">
+	
+	<a href="{U_ACTION}">Voltar</a>
+	
+	<fieldset>
+		<br />
+		<p>Selecione o estado e categoria:</p>
+		<hr />
+		<dt><label for="category_id">Categoria</label></dt>
+		
+		<dd>
+			<select id="category_id" name="category_id">
+				<!-- BEGIN loop_categories -->
+				{loop_categories.CATEGORIES}
+				<!-- END loop_categories -->
+			</select>
+		</dd>
+		
+		<dt><label for="forum_id">Estado</label></dt>
+		<dd id="resultRegion">
+			
+		</dd>
+		<br />
+		<p>Agora selecione os banners</p>
+		<hr />
+		
+		<!-- BEGIN add_banners -->
+			<h3>{add_banners.BANNER_LABEL}</h3>
+			<dt>Escolha um arquivo:</dt>
+			<dd>{add_banners.BANNER_NAME}</dd>
+			
+			<dt>Posição:</dt>
+			<dd>{add_banners.BANNER_POSITION}</dd>
+			
+			<dt>URL:</dt>
+			<dd>{add_banners.BANNER_URL}</dd>
+			
+			<hr />
+		
+		<!-- END add_banners -->
+		
+		<dt><span>Os banners devem estar na resolução: 000x000</span></dt>
+		<dd>
+			
+        	<input class="button1" type="submit" id="submit" name="save" value="Salvar" />&nbsp;        
+    		
+    	</dd>
+	</fieldset>
+	
+		
+</form>
+
+<!-- ELSEIF EDIT_BANNERS -->
+
+	<form id="acp_banners" method="post" enctype="multipart/form-data" action="{U_ACTION}">
+	
+	<a href="{U_ACTION}">Voltar</a>
+	
+	<fieldset>
+		<br />
+		<p>Selecione o estado e categoria:</p>
+		<hr />
+		<dt><label for="category_id">Categoria</label></dt>
+		
+		<dd>
+			<select id="category_id" name="category_id">
+				<!-- BEGIN loop_categories -->
+				{loop_categories.CATEGORIES}
+				<!-- END loop_categories -->
+			</select>
+		</dd>
+		
+		<dt><label for="forum_id">Estado</label></dt>
+		<dd id="resultRegion">
+			<select id="forum_id" name="forum_id">
+			<!-- BEGIN loop_regions -->
+			{loop_regions.REGIONS}
+			<!-- END loop_regions -->
+			</select>
+		</dd>
+		<br />
+		<p>Agora selecione os banners</p>
+		<hr />
+		
+		<!-- BEGIN edit_banners -->
+		
+			<h3>{edit_banners.BANNER_LABEL}</h3>
+			<dd>{edit_banners.BANNER_IMAGE}</dd>
+			
+			<dt>Escolha um arquivo:</dt>
+			<dd>{edit_banners.BANNER_NAME}</dd>
+			<dd>{edit_banners.BANNER_HIDDEN}</dd>
+			
+			<dt>Posição:</dt>
+			<dd>{edit_banners.BANNER_POSITION}</dd>
+			
+			<dt>URL:</dt>
+			<dd>{edit_banners.BANNER_URL}</dd>
+			
+			<hr />
+		<!-- END edit_banners -->
+		
+		<input type="hidden" value="{BANNER_ID}" name="banner_id" />
+		<dt><span>Os banners devem estar na resolução: 000x000</span></dt>
+		<dd>
+			
+        	<input class="button1" type="submit" id="submit" name="save" value="Salvar" />&nbsp;        
+    		
+    	</dd>
+	</fieldset>
+
+<!-- ELSE -->
+
+<h1>{B_ACP_BANNERS_TITLE}</h1>
+
+	<p>{B_ACP_BANNERS_EXPLAIN}</p>
+
+	<form id="acp_words" method="post" action="{U_ACTION}">
+
+	<fieldset class="tabulated">
+	<legend>{L_ACP_WORDS}</legend>
+	<p class="quick">
+		<input class="button2" name="add" type="submit" value="Add Banners" />
+	</p>
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>Categoria</th>
+		<th>Estado</th>
+		<th>Ação</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN banners -->
+		<!-- IF abnners.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td style="text-align: center;">{banners.ESTADO}</td>
+		<td style="text-align: center;">{banners.CATEGORIA}</td>
+		<td>&nbsp;<a href="{banners.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{banners.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
+		
+	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row3">
+		<td colspan="3">{L_ACP_NO_ITEMS}</td>
+	</tr>
+	<!-- END banners -->
+	</tbody>
+	</table>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ENDIF -->
+
+	<script type="text/javascript">
+
+		var ajax_init = function()
+		{
+			var ajax;
+			if(window.XMLHttpRequest)
+			{
+				ajax = new XMLHttpRequest();
+			}
+			else if (window.ActiveXObject)
+			{
+				ajax = new ActiveXObject("Msxml2.XMLHTTP");
+				if(!ajax)
+				{
+					ajax = new ActiveXObject("Microsoft.XMLHTTP");		
+				}
+			}
+			else
+			{
+				alert('Sem suporte à ajax');
+			}
+			return ajax;
+		}
+		
+		var send_ajax = function()
+		{
+			ajax = ajax_init();
+			if(ajax)
+			{
+				ajax.onreadystatechange = function()
+				{
+					if( ajax.readyState == 4 )
+					{
+						if( ajax.status == 200 )
+						{
+							var response = ajax.responseText;
+							var newJson = JSON.parse(response);
+							
+							var element = "";
+							element += '<select id="forum_id" name="forum_id">';
+								
+								for ( i in newJson )
+								{
+									element += '<option value="'+newJson[i].forum_id+'">'+ newJson[i].forum_name +'</option>';
+								}
+								
+							element += '</select>';
+							document.getElementById('resultRegion').innerHTML = element; 
+						}
+					}
+				}
+				
+				var selected = document.getElementById('category_id').value;
+			
+				var query_string = 'parent_id='+selected;
+				ajax.open('POST', '{PHPBB_ROOT_PATH}/adm/style/ajax.php', true);
+				ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+				ajax.send(query_string);
+				
+			}
+		}
+		
+		document.getElementById('category_id').onchange = function()
+		{
+			send_ajax();
+		}
+		
+	</script>
+
+<!-- INCLUDE overall_footer.html -->
